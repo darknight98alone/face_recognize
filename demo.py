@@ -229,6 +229,10 @@ def main(strargument):
     MAX_LIST_LEN =int(conf.get("CUSTOM","MAX_LIST_LEN"))
     MIN_FACE_FOR_SAVE=int(conf.get("CUSTOM","MIN_FACE_FOR_SAVE"))
     LIVE_TIME=int(conf.get("CUSTOM","LIVE_TIME"))
+    ROIXL= int(conf.get("CUSTOM","ROIXL"))
+    ROIXR= int(conf.get("CUSTOM","ROIXR"))
+    ROIYB= int(conf.get("CUSTOM","ROIYB"))
+    ROIYA= int(conf.get("CUSTOM","ROIYA"))
     maxDisappeared =MAXDISAPPEARED  ## khong xuat hien toi da 100 frame
     faces_db = load_faces(FACE_DB_PATH, mtcnn_detector)
     # load_face_db = ThreadingUpdatefacedb(FACE_DB_PATH,mtcnn_detector)
@@ -255,8 +259,8 @@ def main(strargument):
                     #Increase the framecounter
                     frameCounter += 1
                     if retval:
-                        _frame = frame[:,1000:1500]
-                        cv2.rectangle(frame, (1000, 0), (1500, frame.shape[1]), (255, 0, 0), 2)
+                        _frame = frame[ROIYA:ROIYB,ROIXL:ROIXR]
+                        cv2.rectangle(frame, (ROIXL, ROIYA), (ROIXR, ROIYB), (0, 0, 255), 2)
                         good_face_index = []
                         # faces_db = load_face_db.face_db
                         if (frameCounter % 1) == 0:
@@ -342,8 +346,8 @@ def main(strargument):
                                     sims.append(sim)
                                     
                                     # cv2.imwrite("./test/"+name+"_"+str(frameCounter//60)+":"+str(frameCounter%60)+".jpg",save_images[i,:])
-                                    if len(dictResult)>0 :
-                                        cv2.imwrite("./test/"+names[i]+"_"+str(frameCounter//60)+":"+str(frameCounter%60)+"_"+str(dictResult[0][1])+".jpg",save_images[i,:])
+                                    # if len(dictResult)>0 :
+                                        # cv2.imwrite("./test/"+names[i]+"_"+str(frameCounter//60)+":"+str(frameCounter%60)+"_"+str(dictResult[0][1])+".jpg",save_images[i,:])
                                     ################################ tracker
                                 for i, embedding in enumerate(emb_arrays):
                                     embedding = embedding.flatten()
@@ -432,10 +436,10 @@ def main(strargument):
                                     y1 = max(int(y1), 0)
                                     x2 = min(int(x2), _frame.shape[1])
                                     y2 = min(int(y2), _frame.shape[0])
-                                    cv2.rectangle(frame, (x1+1000, y1), (x2+1000, y2), (255, 0, 0), 2)
+                                    cv2.rectangle(frame, (x1+ROIXL, y1+ROIYA), (x2+ROIXL, y2+ROIYA), (0, 255, 0), 2)
                                     # if i in good_face_index:
                                     # if not RepresentsInt(names[i]):
-                                    cv2.putText(frame, names[i] , (int(x1/2 + x2/2+1000), int(y1)), cv2.FONT_HERSHEY_SIMPLEX,0.5, (255, 255, 255), 2)
+                                    cv2.putText(frame, names[i].split("_")[0] , (int(x1/2 + x2/2+ROIXL), int(y1+ROIYA)), cv2.FONT_HERSHEY_SIMPLEX,0.5, (255, 255, 255), 2)
                             else:
                                 for index,trackFace in enumerate(listTrackedFace):
                                     trackFace.countDisappeared = trackFace.countDisappeared + 1
